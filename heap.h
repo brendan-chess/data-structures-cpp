@@ -1,8 +1,9 @@
 /*
  * Author: Brendan Chess
- * Project: Heap Class
- * Purpose: Implement a class that stores data in a heap structure
- * Notes: None
+ * Project: Priority Queue
+ * Purpose: Use a heap to implement a queue that pops items that have the
+ *      highest priority value as opposed to the usual FIFO structure
+ * Notes: Duplicates are allowed in this structure
  */
 #ifndef HEAP_CLASS_HEAP_H
 #define HEAP_CLASS_HEAP_H
@@ -17,21 +18,20 @@ public:
     T pop();
 
     Heap();
-    Heap<T>&operator =(const Heap<T>& rhs);
     ~Heap();
 
     bool is_empty() const;
     unsigned int size() const;
     unsigned int capacity() const;
     friend ostream& operator << (ostream& outs, const Heap<T>& print_me){
-        print_me.print_tree(outs);
+        print_me.print_tree(0, 0, outs);
         return outs;
     }
 
 private:
-    unsigned int how_many; //memory allocated (capacity)
+    unsigned int how_many;
     T* elements;
-    unsigned int last_index; //last memory position used (size)
+    unsigned int last_index;
 
     void print_tree(ostream& outs = cout) const;
     void print_tree(unsigned int root, int level = 0, ostream& outs = cout) const;
@@ -47,12 +47,10 @@ private:
 
 
 
-
-
 template<typename T>
 void Heap<T>::insert(const T &insert_me) {
     //expand size of elements array
-    how_many *= 2;
+    how_many += 2;
     last_index++;
 
     T* temp = new T[how_many];
@@ -66,15 +64,13 @@ void Heap<T>::insert(const T &insert_me) {
     //add the next element at the end
     elements[last_index] = insert_me;
 
-    //reheapify upward
+    //reheapify upward if needed
     int inserted_index = last_index;
     while(elements[parent_index(inserted_index)] < insert_me){
         swap_with_parent(inserted_index);
         inserted_index = parent_index(inserted_index);
     }
 }
-
-
 
 
 
@@ -90,7 +86,7 @@ T Heap<T>::pop() {
     //reheapify down
     int moving_index = 0;
     int bci = big_child_index(moving_index);
-    while(elements[bci] > elements[moving_index] && bci <= last_index){
+    while(elements[moving_index] < elements[bci] && bci <= last_index){
         moving_index = bci;
         swap_with_parent(bci);
         bci = big_child_index(moving_index);
@@ -98,8 +94,6 @@ T Heap<T>::pop() {
 
     return root;
 }
-
-
 
 
 
@@ -112,40 +106,16 @@ Heap<T>::Heap() {
 
 
 
-
-
-template<typename T>
-Heap<T> &Heap<T>::operator=(const Heap<T> &rhs) {
-    delete[] elements;
-    how_many = rhs.how_many;
-    last_index = rhs.last_index;
-
-    elements = new T[how_many];
-    for (int i = 0; i <= last_index; ++i) {
-        elements[i] = rhs.elements[i];
-    }
-
-    return *this;
-}
-
-
-
-
-
 template<typename T>
 Heap<T>::~Heap() {
     delete[] elements;
 }
 
 
-
-
 template<typename T>
 bool Heap<T>::is_empty() const {
     return last_index == -1;
 }
-
-
 
 
 
@@ -156,8 +126,6 @@ unsigned int Heap<T>::size() const {
 
 
 
-
-
 template<typename T>
 unsigned int Heap<T>::capacity() const {
     return how_many;
@@ -165,16 +133,10 @@ unsigned int Heap<T>::capacity() const {
 
 
 
-
-
 template<typename T>
 void Heap<T>::print_tree(ostream &outs) const {
-    print_tree(0, 0, outs);
+
 }
-
-
-
-
 
 template<typename T>
 void Heap<T>::print_tree(unsigned int root, int level, ostream &outs) const {
@@ -186,63 +148,33 @@ void Heap<T>::print_tree(unsigned int root, int level, ostream &outs) const {
     }
 }
 
-
-
-
-
-
 template<typename T>
 bool Heap<T>::is_leaf(int i) const {
     return left_child_index(i) > last_index && right_child_index(i) > last_index;
 }
-
-
-
-
-
 
 template<typename T>
 unsigned int Heap<T>::parent_index(int i) const {
     return (i - 1) / 2;
 }
 
-
-
-
-
-
 template<typename T>
 unsigned int Heap<T>::left_child_index(int i) const {
     return (2 * i) + 1;
 }
-
-
-
-
-
 
 template<typename T>
 unsigned int Heap<T>::right_child_index(int i) const {
     return (2 * i) + 2;
 }
 
-
-
-
-
-
 template<typename T>
 unsigned int Heap<T>::big_child_index(int i) const {
     T left_child = elements[left_child_index(i)];
     T right_child = elements[right_child_index(i)];
-    if(left_child > right_child) return left_child_index(i);
+    if(right_child < left_child) return left_child_index(i);
     return right_child_index(i);
 }
-
-
-
-
-
 
 template<typename T>
 void Heap<T>::swap_with_parent(int i) {
@@ -250,8 +182,6 @@ void Heap<T>::swap_with_parent(int i) {
     elements[i] = elements[parent_index(i)];
     elements[parent_index(i)] = temp;
 }
-
-
 
 
 

@@ -1,42 +1,24 @@
 /*
  * Author: Brendan Chess
- * Project: Heap Class
- * Purpose: Implement a class that stores data in a heap structure
- * Notes: None
+ * Project: Priority Queue
+ * Purpose: Use a heap to implement a queue that pops items that have the
+ *      highest priority value as opposed to the usual FIFO structure
+ * Notes: Duplicates are allowed in this structure
  */
 #include <iostream>
-#include "heap.h"
-
-void demo(){
-    Heap<int> h;
-    char input;
-    int insert_me;
-    srand(time(0));
-
-    while(input != 'x'){
-        cout << "[r]andom [i]nsert [p]op e[x]it: ";
-        cin >> input;
-
-        switch (input){
-            case 'r':
-                insert_me = rand() % 100 + 1;
-                cout << "insert: " << insert_me << endl;
-                h.insert(insert_me);
-                break;
-            case 'i':
-                cout << "insert: ";
-                cin >> insert_me;
-                h.insert(insert_me);
-                break;
-            case 'p':
-                cout << "popped: " << h.pop() << endl;
-                break;
-        }
-
-        cout << h << endl;
-    }
-}
+#include "PQueue.h"
 
 int main() {
-    demo();
+    srand(time(0));
+
+    PQueue<int> pq;
+    for (int i = 0; i < 100; i++) {
+        pq.insert(rand() % 1000 + 1, rand() % 10 + 1);
+    }
+
+    cout << pq << endl;
+
+    for (int i = 0; i < 100; i++) {
+        cout << pq.pop() << endl;
+    }
 }
